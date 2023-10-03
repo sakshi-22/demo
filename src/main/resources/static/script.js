@@ -6,7 +6,7 @@ const travelDiv = document.querySelector('.chatcustomchange[data-type="travel"]'
 const mediclaimDiv = document.querySelector('.chatcustomchange[data-type="mediclaim"]');
 const faqDiv = document.querySelector('.chatcustomchange[data-type="faq"]');
 const options1= ['--SELECT--','Leaves', 'medical', 'payroll', 'comp & ben', 'claims', 'ESIC', 'careers' ];
-const optionsHR = ['--SELECT--','Leave balance','Holiday calendar','RM Change Request','My Current Location','Location Change Request'];
+const optionsHR = ['--SELECT--','Leave balance','Holiday calendar','RM Change Request','My Current Location','Location Change Request','Others'];
 const optionsForIt = ['--SELECT--','PC Slowness','Blue Screen','Account Unlock','Password Reset','Software Installation','Software Uninstallation','Network Slowness Issue','Others'];
 const optiontravel=['--SELECT--','Domestic Travel Policy','International Travel Policy','Others'];
 const optionsmediclaim=['--SELECT--','My Group Policy Number','Download Group Policy','Intimation for Treatment','Others'];
@@ -170,11 +170,13 @@ function appendBotOptions(options) {
 			}else if(selectedOption=='Holiday calendar'){
 				appendBotMessage('Redirecting you to the Holiday calendar');
 				window.open('https://pulse.3i-infotech.com/HRIntranet/ViewDocs?t=holidaylist','_blank');
-			}else if(selectedOption=='My Current Location'||selectedOption=='Location Change Request'||selectedOption=='Domestic Travel Policy'||selectedOption=='International Travel Policy'||selectedOption=='PC Slowness'||selectedOption=='Blue Screen'||selectedOption=='My Group Policy Number'||selectedOption=='Others'){
+			}else if(selectedOption == 'RM Change Request'||selectedOption=='My Current Location'||selectedOption=='Location Change Request'||selectedOption=='Domestic Travel Policy'||selectedOption=='International Travel Policy'||selectedOption=='PC Slowness'||selectedOption=='Blue Screen'||selectedOption=='My Group Policy Number'){
 				appendBotMessage('Coming Soon....');
-			}else if (selectedOption == 'RM Change Request') {
-    			// Add ng-click to the option
-    			// ...
+			}else if (selectedOption === 'Others') {
+                // Create an input field for user input
+				appendBotMessage('Please enter your concern..');
+				removeOptions();
+				otherSection();
 			}
         });
 
@@ -183,10 +185,11 @@ function appendBotOptions(options) {
     } else {
         chatMessage.textContent = 'No options available.';
     }
-
+	
     chatInputs.appendChild(chatMessage);
     scrollToBottom();
 }
+
 
 function finish() {
 	let HideMydiv = document.getElementById("chatInputs");
@@ -307,10 +310,18 @@ function refreshLanguageChat(chatContentId, chatInputsId, chatBarBottomId) {
     }
     document.getElementById(chatBarBottomId).style.display = 'none';
 	const chatInputs = document.getElementById(chatInputsId);
-    if (chatInputs.children.length > 0) {
+	alert(chatInputs.children.length);
+	alert(chatInputs.lastChild);
+    while (chatInputs.children.length > 0) {
         chatInputs.removeChild(chatInputs.lastChild);
     }
 }
 
-
+function otherSection(){
+	debugger
+	chatInputs.innerHTML = `
+        <input type="text" id="others" placeholder='enter here.....' >
+        <button id="nextButton" onclick="">Send</button>
+    `;
+}
 
