@@ -21,16 +21,19 @@ hrPulseDiv.addEventListener('click', function() {
     appendUserMessage('HR Pulse');
      if (activeSection !== null) {
         removeOptions();
+		removeOtherSection();
     }
     askForHrPulse();
     activeSection = 'hrPulse'; 
 });
 
 itDiv.addEventListener('click', function() {
+	debugger
 	clearTimeout(timer); 
     appendUserMessage('IT SERVICE');
 	if (activeSection !== null) {
         removeOptions();
+		removeOtherSection();
     }
    askForItService();
     activeSection = 'itService'; 
@@ -41,6 +44,7 @@ travelDiv.addEventListener('click', function() {
     appendUserMessage('TRAVEL');
 	if (activeSection !== null) {
         removeOptions();
+		removeOtherSection();
     }
 	askForTravel();
     activeSection = 'travel'; 
@@ -51,6 +55,7 @@ mediclaimDiv.addEventListener('click', function() {
     appendUserMessage('MEDICLAIM');
 	if (activeSection !== null) {
         removeOptions();
+		removeOtherSection();
     }
 	askFormediclaim();
     activeSection = 'mediclaim'; 
@@ -61,6 +66,7 @@ faqDiv.addEventListener('click', function() {
     appendUserMessage('FAQ');
 	if (activeSection !== null) {
         removeOptions();
+		removeOtherSection();
     }
 	askforfaq();
     activeSection = 'faq';
@@ -68,6 +74,7 @@ faqDiv.addEventListener('click', function() {
 
 function removeOptions() {
     const botOptions = document.querySelector('.chat-messageOptions.bot-messageOptions');
+	
     if (botOptions) {
         botOptions.remove();
     }
@@ -310,8 +317,6 @@ function refreshLanguageChat(chatContentId, chatInputsId, chatBarBottomId) {
     }
     document.getElementById(chatBarBottomId).style.display = 'none';
 	const chatInputs = document.getElementById(chatInputsId);
-	alert(chatInputs.children.length);
-	alert(chatInputs.lastChild);
     while (chatInputs.children.length > 0) {
         chatInputs.removeChild(chatInputs.lastChild);
     }
@@ -323,5 +328,14 @@ function otherSection(){
         <input type="text" id="others" placeholder='enter here.....' >
         <button id="nextButton" onclick="">Send</button>
     `;
+}
+function removeOtherSection(){
+	debugger
+	const others=document.getElementById('others');
+	const nextButton=document.getElementById('nextButton');
+	if(others){
+		others.remove();
+		nextButton.remove();
+	}
 }
 
