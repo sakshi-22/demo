@@ -17,7 +17,8 @@ let timer;
 let activeSection = null;
 
 hrPulseDiv.addEventListener('click', function() {
-	clearTimeout(timer); 
+	clearTimeout(timer);
+	 clearChatInputs();
     appendUserMessage('HR Pulse');
      if (activeSection !== null) {
         removeOptions();
@@ -27,7 +28,8 @@ hrPulseDiv.addEventListener('click', function() {
 });
 
 itDiv.addEventListener('click', function() {
-	clearTimeout(timer); 
+	clearTimeout(timer);
+	 clearChatInputs();
     appendUserMessage('IT SERVICE');
 	if (activeSection !== null) {
         removeOptions();
@@ -37,6 +39,7 @@ itDiv.addEventListener('click', function() {
 });
 
 travelDiv.addEventListener('click', function() {
+     clearChatInputs();
 	clearTimeout(timer); 
     appendUserMessage('TRAVEL');
 	if (activeSection !== null) {
@@ -47,6 +50,7 @@ travelDiv.addEventListener('click', function() {
 });
 
 mediclaimDiv.addEventListener('click', function() {
+    clearChatInputs();
 	clearTimeout(timer); 
     appendUserMessage('MEDICLAIM');
 	if (activeSection !== null) {
@@ -57,6 +61,7 @@ mediclaimDiv.addEventListener('click', function() {
 });
 
 faqDiv.addEventListener('click', function() {
+    clearChatInputs();
 	clearTimeout(timer); 
     appendUserMessage('FAQ');
 	if (activeSection !== null) {
@@ -67,6 +72,7 @@ faqDiv.addEventListener('click', function() {
 });
 
 function removeOptions() {
+
     const botOptions = document.querySelector('.chat-messageOptions.bot-messageOptions');
     if (botOptions) {
         botOptions.remove();
@@ -119,33 +125,38 @@ function collectYes(){
 }
 
 function askForHrPulse() {
+    clearChatInputs();
     appendBotMessage('Which option do you like to choose? ');
 	appendBotOptions(optionsHR);
 }
 
 function askForItService(){
+     clearChatInputs();
 	 appendBotMessage('What issue you are facing?');
 	 appendBotOptions(optionsForIt);
 }
 
 function askForTravel(){
+     clearChatInputs();
 	 appendBotMessage('Which Travel policy do you want to know about?');
 	 appendBotOptions(optiontravel);
 }
 
 function askFormediclaim(){
+     clearChatInputs();
 	 appendBotMessage('Which Mediclaim policy do you want to know about?');
 	 appendBotOptions(optionsmediclaim);
 }
 
 function askforfaq(){
+    clearChatInputs();
 	appendBotMessage('Please select your question...');
 	appendBotOptions(optionsfaq);
 }
 
 
 function appendBotOptions(options) {
-	debugger
+
     const chatMessage = document.createElement('div');
     chatMessage.className = 'chat-messageOptions bot-messageOptions';
 
@@ -173,9 +184,10 @@ function appendBotOptions(options) {
 			}else if(selectedOption=='My Current Location'||selectedOption=='Location Change Request'||selectedOption=='Domestic Travel Policy'||selectedOption=='International Travel Policy'||selectedOption=='PC Slowness'||selectedOption=='Blue Screen'||selectedOption=='My Group Policy Number'||selectedOption=='Others'){
 				appendBotMessage('Coming Soon....');
 			}else if (selectedOption == 'RM Change Request') {
-    			// Add ng-click to the option
-    			// ...
 			}
+			else if (selectedOption === 'Password Reset') {
+                  promptForLoginName();
+            }
         });
 
         chatMessage.appendChild(select);
@@ -186,6 +198,33 @@ function appendBotOptions(options) {
 
     chatInputs.appendChild(chatMessage);
     scrollToBottom();
+}
+function promptForLoginName() {
+    appendBotMessage('Please enter the Employee login name:');
+    chatInputs.innerHTML = `
+        <input type="text" id="loginNameInput" placeholder="Login Name">
+        <button onclick="collectLoginName()">Submit</button>
+    `;
+}
+
+function collectLoginName() {
+    const loginName = document.getElementById('loginNameInput').value;
+    appendUserMessage(loginName);
+    promptForNewPassword();
+}
+
+function promptForNewPassword() {
+    appendBotMessage('Please enter the new password:');
+    chatInputs.innerHTML = `
+        <input type="password" id="passwordInput" placeholder="New Password">
+        <button onclick="collectPassword()">Submit</button>
+    `;
+}
+
+function collectPassword() {
+    const newPassword = document.getElementById('passwordInput').value;
+    appendUserMessage("*******"); // Mask the password in chat for security
+    appendBotMessage("Password reset request received. Processing...");
 }
 
 function finish() {
@@ -300,7 +339,7 @@ document.getElementById('refreshbutton').addEventListener('click', function() {
 	});
 	
 function refreshLanguageChat(chatContentId, chatInputsId, chatBarBottomId) {
-	debugger
+
     const chatContainer = document.getElementById(chatContentId);
     while (chatContainer.children.length > 2) {
         chatContainer.removeChild(chatContainer.lastChild);
@@ -310,6 +349,9 @@ function refreshLanguageChat(chatContentId, chatInputsId, chatBarBottomId) {
     if (chatInputs.children.length > 0) {
         chatInputs.removeChild(chatInputs.lastChild);
     }
+}
+function clearChatInputs() {
+    chatInputs.innerHTML = '';
 }
 
 
