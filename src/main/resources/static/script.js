@@ -22,20 +22,17 @@ hrPulseDiv.addEventListener('click', function() {
     appendUserMessage('HR Pulse');
      if (activeSection !== null) {
         removeOptions();
-		removeOtherSection();
+		//removeOtherSection();
     }
     askForHrPulse();
     activeSection = 'hrPulse'; 
 });
 
 itDiv.addEventListener('click', function() {
-<<<<<<< HEAD
 	clearTimeout(timer);
 	 clearChatInputs();
-=======
 	debugger
 	clearTimeout(timer); 
->>>>>>> c623be684f0eec4b511aae38958d42ec0602864e
     appendUserMessage('IT SERVICE');
 	if (activeSection !== null) {
         removeOptions();
@@ -166,7 +163,7 @@ function askforfaq(){
 }
 
 
-function appendBotOptions(options) {
+function appendBotOptions(data) {
 
     const chatMessage = document.createElement('div');
     chatMessage.className = 'chat-messageOptions bot-messageOptions';
@@ -192,21 +189,40 @@ function appendBotOptions(options) {
 			}else if(selectedOption=='Holiday calendar'){
 				appendBotMessage('Redirecting you to the Holiday calendar');
 				window.open('https://pulse.3i-infotech.com/HRIntranet/ViewDocs?t=holidaylist','_blank');
-			}else if(selectedOption == 'RM Change Request'||selectedOption=='My Current Location'||selectedOption=='Location Change Request'||selectedOption=='Domestic Travel Policy'||selectedOption=='International Travel Policy'||selectedOption=='PC Slowness'||selectedOption=='Blue Screen'||selectedOption=='My Group Policy Number'){
+			}else if(selectedOption=='My Current Location'||selectedOption=='Location Change Request'||selectedOption=='Domestic Travel Policy'||selectedOption=='International Travel Policy'||selectedOption=='PC Slowness'||selectedOption=='Blue Screen'||selectedOption=='My Group Policy Number'){
 				appendBotMessage('Coming Soon....');
-<<<<<<< HEAD
-			}else if (selectedOption == 'RM Change Request') {
-=======
 			}else if (selectedOption === 'Others') {
                 // Create an input field for user input
 				appendBotMessage('Please enter your concern..');
 				removeOptions();
 				otherSection();
->>>>>>> c623be684f0eec4b511aae38958d42ec0602864e
 			}
 			else if (selectedOption === 'Password Reset') {
                   promptForLoginName();
-            }
+            }else if (selectedOption ==='RM Change Request') {
+				appendBotMessage("Please select your location");
+				askForLocation();
+				const to = 'recipient@example.com'; // Replace with the recipient's email address
+				const subject = 'RM Change Request';
+				const message = 'Please process the RM Change Request.';
+			
+				// Make an AJAX request to send the email
+				fetch('/sendEmail', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+					},
+					body: `to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}`,
+				})
+				.then(response => response.text())
+				.then(data => {
+					appendBotMessage(data); // Display the response message
+				})
+				.catch(error => {
+					appendBotMessage('Error: ' + error);
+				});
+			}
+			
         });
 
         chatMessage.appendChild(select);
@@ -217,6 +233,34 @@ function appendBotOptions(options) {
 	
     chatInputs.appendChild(chatMessage);
     scrollToBottom();
+}
+function askForLocation() {
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+		scope.fetchLocation().then(function(data) {
+			if (data && Array.isArray(data)) {
+				
+			}
+		});
+	
+}
+
+function createDropdown(data) {
+	let dropdownOptions = data.map(item => `<option value="${item.lossId}|${item.edescription}">${item.edescription}</option>`).join("");
+	chatInputs.innerHTML =
+		`<select id="chatbot_cause">
+        ${dropdownOptions}
+    </select>
+    <button onclick="collectCause()">Send</button>`;
+	appendBotMessage("Select HR WHOM YOU WANT TO SEND MAIL");
+}
+
+function collectlocation() {
+	let selectedValue = document.getElementById('chatbot_cause').value;
+	let [lossId, lossName] = selectedValue.split('|');
+	fdetails.lossId = lossId;
+	fdetails.lossName = lossName;
+	appendUserMessage(fdetails.lossName);
+	askLifeCycle();
 }
 function promptForLoginName() {
     appendBotMessage('Please enter the Employee login name:');
@@ -382,12 +426,6 @@ function otherSection(){
     `;
 }
 function removeOtherSection(){
-	debugger
-	const others=document.getElementById('others');
-	const nextButton=document.getElementById('nextButton');
-	if(others){
-		others.remove();
-		nextButton.remove();
-	}
+	chatInputs.innerHTML = '';
 }
 
