@@ -1,4 +1,4 @@
-package com.botpulse.entity;
+package com.botpulse.demo.entity;
 
 
 import jakarta.persistence.Column;
@@ -9,13 +9,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-
 @Table
-public class moduleMaster {
+public class ModuleMaster {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="moduleId")
+	@Column(name="id")
 	private int moduleId;
 	
 	@Column(name="moduleName")
@@ -37,12 +36,12 @@ public class moduleMaster {
 		this.moduleName = moduleName;
 	}
 
-	public moduleMaster() {
+	public ModuleMaster() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public moduleMaster(int moduleId, String moduleName) {
+	public ModuleMaster(int moduleId, String moduleName) {
 		super();
 		this.moduleId = moduleId;
 		this.moduleName = moduleName;
