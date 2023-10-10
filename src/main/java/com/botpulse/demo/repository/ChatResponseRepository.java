@@ -6,6 +6,6 @@ import com.botpulse.demo.entity.ChatResponses;
 
 
 @Repository
-public interface ChatResponseRepository extends JpaRepository<ChatResponses, Long> {
+public interface ChatResponseRepository extends JpaRepository<ChatResponses, Integer> {
 
 }

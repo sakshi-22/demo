@@ -7,7 +7,7 @@ import com.botpulse.demo.entity.ModuleMaster;
 
 
 @Repository
-public interface ModuleMasterRepository extends JpaRepository<ModuleMaster, Long> {
+public interface ModuleMasterRepository extends JpaRepository<ModuleMaster, Integer> {
 	
 
 }

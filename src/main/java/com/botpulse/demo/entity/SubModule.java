@@ -25,7 +25,7 @@ public class SubModule {
     @Column(name="subModuleName")
     private String subModuleName;
 	
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne( optional = false)
     @JoinColumn(name="moduleId", nullable = false)
     private ModuleMaster moduleMaster;
     
