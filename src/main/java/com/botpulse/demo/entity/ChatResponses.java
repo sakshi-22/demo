@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,11 +21,11 @@ public class ChatResponses {
 	private int chatResponsesId;
 
 	@ManyToOne
-	@JoinColumn(name = "moduleName")
+	@JoinColumn(name = "moduleId")
 	private ModuleMaster moduleName;
 
 	@ManyToOne
-	@JoinColumn(name = "subModuleName")
+	@JoinColumn(name = "subModuleId")
 	private SubModule subModuleName;
 
 	@Column(name = "botMessages")
