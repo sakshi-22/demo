@@ -21,14 +21,16 @@ import com.botpulse.demo.repository.SubModuleRepository;
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class ChatBotController {
+	@Autowired
+	private SubModuleRepository subModuleRepository;
 
-    private final ChatResponseRepository chatResponseRepository;
+	@Autowired
+    private ChatResponseRepository chatResponseRepository;
 
-    @Autowired
-    public ChatBotController(ChatResponseRepository chatResponseRepository) {
-        this.chatResponseRepository = chatResponseRepository;
-    }
-    
+   
+     public ChatBotController(ChatResponseRepository chatResponseRepository) {
+ 		this.chatResponseRepository = chatResponseRepository;
+     }
 //
 //    @GetMapping("/chatresponses")
 //    public ResponseEntity<List<ChatResponses>> getAllChatResponses() {
@@ -64,8 +66,10 @@ public class ChatBotController {
                 Matcher matcher = pattern.matcher(botMessage);
                 
                 if (matcher.find()) {
-                    String extractedUrl = matcher.group(0); // This contains the extracted URL
-                    System.out.println(extractedUrl);
+                    String clickHere = matcher.group(0); // This contains the extracted URL
+                    System.out.println(clickHere);
+                    String hyperlinkedMessage = botMessage.replace(clickHere, "<a href='" + clickHere + "'>clickHere</a>");
+                    response.setBotMessages(hyperlinkedMessage);
                     // Do whatever you want with the extractedUrl here
                 }
             }
@@ -73,7 +77,17 @@ public class ChatBotController {
         
         return ResponseEntity.ok(chatResponses);
     }
+    @GetMapping("/submodules/by-module/{moduleId}")
+    public ResponseEntity<List<SubModule>> getSubModulesByModuleId(@PathVariable Integer moduleId) {
+        List<SubModule> subModules = subModuleRepository.findByModuleMaster_ModuleId(moduleId);
+        if (subModules.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(subModules);
+        }
 
-
-   
+    }
+ 
+    
+    
 }

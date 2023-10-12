@@ -5,95 +5,100 @@ const itDiv = document.querySelector('.chatcustomchange[data-type="itService"]')
 const travelDiv = document.querySelector('.chatcustomchange[data-type="travel"]');
 const mediclaimDiv = document.querySelector('.chatcustomchange[data-type="mediclaim"]');
 const faqDiv = document.querySelector('.chatcustomchange[data-type="faq"]');
-const options1= ['--SELECT--','Leaves', 'medical', 'payroll', 'comp & ben', 'claims', 'ESIC', 'careers' ];
-const optionsHR = ['--SELECT--','Leave balance','Holiday calendar','RM Change Request','My Current Location','Location Change Request','Others'];
-const optionsForIt = ['--SELECT--','PC Slowness','Blue Screen','Account Unlock','Password Reset','Software Installation','Software Uninstallation','Network Slowness Issue','Others'];
-const optiontravel=['--SELECT--','Domestic Travel Policy','International Travel Policy','Others'];
-const optionsmediclaim=['--SELECT--','My Group Policy Number','Download Group Policy','Intimation for Treatment','Others'];
-const optionsfaq=['--SELECT--','List of FAQ','Others'];
+const options1 = ['--SELECT--', 'Leaves', 'medical', 'payroll', 'comp & ben', 'claims', 'ESIC', 'careers'];
+const optionsHR = ['--SELECT--', 'Leave balance', 'Holiday calendar', 'RM Change Request', 'My Current Location', 'Location Change Request', 'Others'];
+const optionsForIt = ['--SELECT--', 'PC Slowness', 'Blue Screen', 'Account Unlock', 'Password Reset', 'Software Installation', 'Software Uninstallation', 'Network Slowness Issue', 'Others'];
+const optiontravel = ['--SELECT--', 'Domestic Travel Policy', 'International Travel Policy', 'Others'];
+const optionsmediclaim = ['--SELECT--', 'My Group Policy Number', 'Download Group Policy', 'Intimation for Treatment', 'Others'];
+const optionsfaq = ['--SELECT--', 'List of FAQ', 'Others'];
 let fdetails = {};
 let isMuted = false;
 let timer;
 let activeSection = null;
+var moduleId = 0;
 
 hrPulseDiv.addEventListener('click', function() {
 	clearTimeout(timer);
-	 clearChatInputs();
-    appendUserMessage('HR Pulse');
-     if (activeSection !== null) {
-        removeOptions();
+	clearChatInputs();
+	//moduleId = 1;
+	//fetchSubModule(moduleId);
+	appendUserMessage('HR Pulse');
+	askForHrPulse();
+	if (activeSection !== null) {
+		removeOptions();
 		//removeOtherSection();
-    }
-    askForHrPulse();
-    activeSection = 'hrPulse'; 
+	}
+	activeSection = 'hrPulse';
 });
+
+
 
 itDiv.addEventListener('click', function() {
 	clearTimeout(timer);
-	 clearChatInputs();
+	clearChatInputs();
 	debugger
-	clearTimeout(timer); 
-    appendUserMessage('IT SERVICE');
+	clearTimeout(timer);
+	appendUserMessage('IT SERVICE');
 	if (activeSection !== null) {
-        removeOptions();
+		removeOptions();
 		removeOtherSection();
-    }
-   askForItService();
-    activeSection = 'itService'; 
+	}
+	askForItService();
+	activeSection = 'itService';
 });
 
 travelDiv.addEventListener('click', function() {
-     clearChatInputs();
-	clearTimeout(timer); 
-    appendUserMessage('TRAVEL');
+	clearChatInputs();
+	clearTimeout(timer);
+	appendUserMessage('TRAVEL');
 	if (activeSection !== null) {
-        removeOptions();
+		removeOptions();
 		removeOtherSection();
-    }
+	}
 	askForTravel();
-    activeSection = 'travel'; 
+	activeSection = 'travel';
 });
 
 mediclaimDiv.addEventListener('click', function() {
-    clearChatInputs();
-	clearTimeout(timer); 
-    appendUserMessage('MEDICLAIM');
+	clearChatInputs();
+	clearTimeout(timer);
+	appendUserMessage('MEDICLAIM');
 	if (activeSection !== null) {
-        removeOptions();
+		removeOptions();
 		removeOtherSection();
-    }
+	}
 	askFormediclaim();
-    activeSection = 'mediclaim'; 
+	activeSection = 'mediclaim';
 });
 
 faqDiv.addEventListener('click', function() {
-    clearChatInputs();
-	clearTimeout(timer); 
-    appendUserMessage('FAQ');
+	clearChatInputs();
+	clearTimeout(timer);
+	appendUserMessage('FAQ');
 	if (activeSection !== null) {
-        removeOptions();
+		removeOptions();
 		removeOtherSection();
-    }
+	}
 	askforfaq();
-    activeSection = 'faq';
+	activeSection = 'faq';
 });
 
 function removeOptions() {
 
-    const botOptions = document.querySelector('.chat-messageOptions.bot-messageOptions');
-	
-    if (botOptions) {
-        botOptions.remove();
-    }
+	const botOptions = document.querySelector('.chat-messageOptions.bot-messageOptions');
+
+	if (botOptions) {
+		botOptions.remove();
+	}
 }
 
 timer = setTimeout(function() {
-    appendBotMessage("Is there any concern you are facing,Would you like to raise a ticket? ");
+	appendBotMessage("Is there any concern you are facing,Would you like to raise a ticket? ");
 	if (activeSection !== null) {
-        removeOptions();
-    }
+		removeOptions();
+	}
 	askForYesOrNo();
-    activeSection = 'hrPulse';
+	activeSection = 'hrPulse';
 }, 180000);
 
 function appendUserMessage(message) {
@@ -107,7 +112,7 @@ function appendUserMessage(message) {
 function appendBotMessage(message) {
 	const botMsg = document.createElement('div');
 	botMsg.className = 'chat-message bot-message';
-	botMsg.textContent = message;
+	botMsg.innerHTML = message;
 	chatContent.appendChild(botMsg);
 	textToSpeech(message);
 	scrollToBottom();
@@ -117,14 +122,14 @@ function scrollToBottom() {
 	chatContent.scrollTop = chatContent.scrollHeight;
 }
 
-function askForYesOrNo(){
+function askForYesOrNo() {
 	chatInputs.innerHTML = `
         <button onclick="collectYes()">Yes</button>
 		<button onclick="collectNO()">No</button>
     `;
 }
 
-function collectYes(){
+function collectYes() {
 	chatInputs.innerHTML = ` `;
 	appendUserMessage('yes');
 	appendBotMessage("Which section are you facing the concern?");
@@ -133,115 +138,124 @@ function collectYes(){
 }
 
 function askForHrPulse() {
-    clearChatInputs();
-    appendBotMessage('Which option do you like to choose? ');
-	appendBotOptions(optionsHR);
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	appendBotMessage('Which option do you like to choose? ');
+	moduleId = 1;
+	scope.fetchSubModule(1).then(function(data) {
+		if (data && Array.isArray(data)) {
+			appendBotOptions(data, moduleId);
+
+		}
+
+	});
 }
 
-function askForItService(){
-     clearChatInputs();
-	 appendBotMessage('What issue you are facing?');
-	 appendBotOptions(optionsForIt);
+function askForItService() {
+	clearChatInputs();
+	appendBotMessage('What issue you are facing?');
+	appendBotOptions(optionsForIt);
 }
 
-function askForTravel(){
-     clearChatInputs();
-	 appendBotMessage('Which Travel policy do you want to know about?');
-	 appendBotOptions(optiontravel);
+function askForTravel() {
+	clearChatInputs();
+	appendBotMessage('Which Travel policy do you want to know about?');
+	appendBotOptions(optiontravel);
 }
 
-function askFormediclaim(){
-     clearChatInputs();
-	 appendBotMessage('Which Mediclaim policy do you want to know about?');
-	 appendBotOptions(optionsmediclaim);
+function askFormediclaim() {
+	clearChatInputs();
+	appendBotMessage('Which Mediclaim policy do you want to know about?');
+	appendBotOptions(optionsmediclaim);
 }
 
-function askforfaq(){
-    clearChatInputs();
+function askforfaq() {
+	clearChatInputs();
 	appendBotMessage('Please select your question...');
 	appendBotOptions(optionsfaq);
 }
 
 
-function appendBotOptions(data) {
+function appendBotOptions(data, moduleId) {
+	const chatMessage = document.createElement('div');
+	chatMessage.className = 'chat-messageOptions bot-messageOptions';
 
-    const chatMessage = document.createElement('div');
-    chatMessage.className = 'chat-messageOptions bot-messageOptions';
+	if (moduleId === 1) { // Check the moduleId to determine whether to show the dropdown
+		if (data && data.length > 0) {
+			const select = document.createElement('select');
 
-    if (options && options.length > 0) {
-        const select = document.createElement('select');
+			data.forEach(subModule => {
+				const optionElement = document.createElement('option');
+				optionElement.value = subModule.subModuleName;
+				optionElement.text = subModule.subModuleName;
+				select.appendChild(optionElement);
+			});
+			select.addEventListener('change', function() {
+				const selectedOption = select.options[select.selectedIndex].text;
+				appendUserMessage(selectedOption);
+				if (selectedOption == 'Leave balance') {
+					appendBotMessage('Redirecting you to the Hono portal....');
+					window.open('https://3i.honohr.com/login', '_blank');
+				} else if (selectedOption == 'claims') {
+					appendBotMessage('Redirecting you to the IAssist Portal');
+					window.open('http://14.141.70.64/TicketingSystem/Login.aspx', '_blank');
+				} else if (selectedOption == 'Holiday calendar') {
+					appendBotMessage('Redirecting you to the Holiday calendar');
+					window.open('https://pulse.3i-infotech.com/HRIntranet/ViewDocs?t=holidaylist', '_blank');
+				} else if (selectedOption == 'My Current Location' || selectedOption == 'Location Change Request' || selectedOption == 'Domestic Travel Policy' || selectedOption == 'International Travel Policy' || selectedOption == 'PC Slowness' || selectedOption == 'Blue Screen' || selectedOption == 'My Group Policy Number') {
+					appendBotMessage('Coming Soon....');
+				} else if (selectedOption === 'Others') {
+					// Create an input field for user input
+					appendBotMessage('Please enter your concern..');
+					removeOptions();
+					otherSection();
+				}
+				else if (selectedOption === 'Password Reset') {
+					promptForLoginName();
+				} else if (selectedOption === 'RM Change Request') {
+					appendBotMessage("Please select your location");
+					askForLocation();
+					const to = 'recipient@example.com'; // Replace with the recipient's email address
+					const subject = 'RM Change Request';
+					const message = 'Please process the RM Change Request.';
 
-        options.forEach(option => {
-            const optionElement = document.createElement('option');
-            optionElement.value = option;
-            optionElement.text = option;
-            select.appendChild(optionElement);
-        });
-		select.addEventListener('change', function () {
-            const selectedOption = select.options[select.selectedIndex].text;
-            appendUserMessage(selectedOption); 
-			if(selectedOption=='Leave balance'){
-				appendBotMessage('Redirecting you to the Hono portal....');
-				window.open( 'https://3i.honohr.com/login','_blank');
-			}else if(selectedOption=='claims'){
-				appendBotMessage('Redirecting you to the IAssist Portal');
-				window.open('http://14.141.70.64/TicketingSystem/Login.aspx','_blank');
-			}else if(selectedOption=='Holiday calendar'){
-				appendBotMessage('Redirecting you to the Holiday calendar');
-				window.open('https://pulse.3i-infotech.com/HRIntranet/ViewDocs?t=holidaylist','_blank');
-			}else if(selectedOption=='My Current Location'||selectedOption=='Location Change Request'||selectedOption=='Domestic Travel Policy'||selectedOption=='International Travel Policy'||selectedOption=='PC Slowness'||selectedOption=='Blue Screen'||selectedOption=='My Group Policy Number'){
-				appendBotMessage('Coming Soon....');
-			}else if (selectedOption === 'Others') {
-                // Create an input field for user input
-				appendBotMessage('Please enter your concern..');
-				removeOptions();
-				otherSection();
-			}
-			else if (selectedOption === 'Password Reset') {
-                  promptForLoginName();
-            }else if (selectedOption ==='RM Change Request') {
-				appendBotMessage("Please select your location");
-				askForLocation();
-				const to = 'recipient@example.com'; // Replace with the recipient's email address
-				const subject = 'RM Change Request';
-				const message = 'Please process the RM Change Request.';
-			
-				// Make an AJAX request to send the email
-				fetch('/sendEmail', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-					},
-					body: `to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}`,
-				})
-				.then(response => response.text())
-				.then(data => {
-					appendBotMessage(data); // Display the response message
-				})
-				.catch(error => {
-					appendBotMessage('Error: ' + error);
-				});
-			}
-			
-        });
+					// Make an AJAX request to send the email
+					fetch('/sendEmail', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+						},
+						body: `to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}`,
+					})
+						.then(response => response.text())
+						.then(data => {
+							appendBotMessage(data); // Display the response message
+						})
+						.catch(error => {
+							appendBotMessage('Error: ' + error);
+						});
+				}
 
-        chatMessage.appendChild(select);
+			});
 
-    } else {
-        chatMessage.textContent = 'No options available.';
-    }
-	
-    chatInputs.appendChild(chatMessage);
-    scrollToBottom();
+			chatMessage.appendChild(select);
+		} else {
+			chatMessage.textContent = 'No sub-modules available for this module.';
+		}
+	} else {
+		chatMessage.textContent = 'Dropdown not available for this module.';
+	}
+
+	chatInputs.appendChild(chatMessage);
+	scrollToBottom();
 }
 function askForLocation() {
 	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
-		scope.fetchLocation().then(function(data) {
-			if (data && Array.isArray(data)) {
-				
-			}
-		});
-	
+	scope.fetchLocation().then(function(data) {
+		if (data && Array.isArray(data)) {
+
+		}
+	});
+
 }
 
 function createDropdown(data) {
@@ -263,31 +277,31 @@ function collectlocation() {
 	askLifeCycle();
 }
 function promptForLoginName() {
-    appendBotMessage('Please enter the Employee login name:');
-    chatInputs.innerHTML = `
+	appendBotMessage('Please enter the Employee login name:');
+	chatInputs.innerHTML = `
         <input type="text" id="loginNameInput" placeholder="Login Name">
         <button onclick="collectLoginName()">Submit</button>
     `;
 }
 
 function collectLoginName() {
-    const loginName = document.getElementById('loginNameInput').value;
-    appendUserMessage(loginName);
-    promptForNewPassword();
+	const loginName = document.getElementById('loginNameInput').value;
+	appendUserMessage(loginName);
+	promptForNewPassword();
 }
 
 function promptForNewPassword() {
-    appendBotMessage('Please enter the new password:');
-    chatInputs.innerHTML = `
+	appendBotMessage('Please enter the new password:');
+	chatInputs.innerHTML = `
         <input type="password" id="passwordInput" placeholder="New Password">
         <button onclick="collectPassword()">Submit</button>
     `;
 }
 
 function collectPassword() {
-    const newPassword = document.getElementById('passwordInput').value;
-    appendUserMessage("*******"); // Mask the password in chat for security
-    appendBotMessage("Password reset request received. Processing...");
+	const newPassword = document.getElementById('passwordInput').value;
+	appendUserMessage("*******"); // Mask the password in chat for security
+	appendBotMessage("Password reset request received. Processing...");
 }
 
 
@@ -324,9 +338,9 @@ function displayMessage() {
 	let sucessMsg = document.getElementById("sucessMsg");
 	const chatBarBottom = document.getElementById("ThankYouContainer");
 	sucessMsg.style.display = "block";
-	chatBarBottom.innerHTML = "🎉 Thank you for submitting your details! 🎉"; 
+	chatBarBottom.innerHTML = "🎉 Thank you for submitting your details! 🎉";
 	chatBarBottom.style.opacity = '1';
-	chatBarBottom.style.animation = 'thankYouAnimation 1s ease-out'; 
+	chatBarBottom.style.animation = 'thankYouAnimation 1s ease-out';
 	console.log(fdetails);
 }
 function sendDataToAngular(data) {
@@ -336,11 +350,11 @@ function sendDataToAngular(data) {
 }
 function textToSpeech(text) {
 	if (isMuted) {
-		return; 
+		return;
 	}
 	let synth = window.speechSynthesis;
 	let utterance = new SpeechSynthesisUtterance(text);
-	utterance.lang = 'en-US'; 
+	utterance.lang = 'en-US';
 	synth.speak(utterance);
 }
 
@@ -351,19 +365,19 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 function toggleMute() {
-  isMuted = !isMuted;
-  const soundImage = document.getElementById('soundImage');
-  const muteImage = document.getElementById('muteImage');
-  const speakImage = document.getElementById('speakImage');
-  if(isMuted) {
-	soundImage.style.display='none';
-    muteImage.style.display = 'block';
-    speakImage.style.display = 'none';
-  } else {
-	soundImage.style.display='none';
-    muteImage.style.display = 'none';
-    speakImage.style.display = 'block';
-  }
+	isMuted = !isMuted;
+	const soundImage = document.getElementById('soundImage');
+	const muteImage = document.getElementById('muteImage');
+	const speakImage = document.getElementById('speakImage');
+	if (isMuted) {
+		soundImage.style.display = 'none';
+		muteImage.style.display = 'block';
+		speakImage.style.display = 'none';
+	} else {
+		soundImage.style.display = 'none';
+		muteImage.style.display = 'none';
+		speakImage.style.display = 'block';
+	}
 }
 
 document.getElementById("allincall-popup").addEventListener("click", function() {
@@ -394,38 +408,38 @@ document.getElementById("closeButton").addEventListener("click", function() {
 });
 
 function initializeChatbot() {
-	chatContent.innerHTML = ''; 
+	chatContent.innerHTML = '';
 	//askForName();
 }
 
 document.getElementById('refreshbutton').addEventListener('click', function() {
-		refreshLanguageChat('chatContent', 'chatInputs', 'chat-bar-bottom');
-	});
-	
+	refreshLanguageChat('chatContent', 'chatInputs', 'chat-bar-bottom');
+});
+
 function refreshLanguageChat(chatContentId, chatInputsId, chatBarBottomId) {
 
-    const chatContainer = document.getElementById(chatContentId);
-    while (chatContainer.children.length > 2) {
-        chatContainer.removeChild(chatContainer.lastChild);
-    }
-    document.getElementById(chatBarBottomId).style.display = 'none';
+	const chatContainer = document.getElementById(chatContentId);
+	while (chatContainer.children.length > 2) {
+		chatContainer.removeChild(chatContainer.lastChild);
+	}
+	document.getElementById(chatBarBottomId).style.display = 'none';
 	const chatInputs = document.getElementById(chatInputsId);
-    while (chatInputs.children.length > 0) {
-        chatInputs.removeChild(chatInputs.lastChild);
-    }
+	while (chatInputs.children.length > 0) {
+		chatInputs.removeChild(chatInputs.lastChild);
+	}
 }
 function clearChatInputs() {
-    chatInputs.innerHTML = '';
+	chatInputs.innerHTML = '';
 }
 
-function otherSection(){
+function otherSection() {
 	debugger
 	chatInputs.innerHTML = `
         <input type="text" id="others" placeholder='enter here.....' >
         <button id="nextButton" onclick="">Send</button>
     `;
 }
-function removeOtherSection(){
+function removeOtherSection() {
 	chatInputs.innerHTML = '';
 }
 

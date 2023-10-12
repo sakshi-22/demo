@@ -11,5 +11,5 @@ import com.botpulse.demo.entity.SubModule;
 @Repository
 public interface SubModuleRepository extends JpaRepository<SubModule, Integer> {
 
-
+	List<SubModule> findByModuleMaster_ModuleId(Integer moduleId);
 }
