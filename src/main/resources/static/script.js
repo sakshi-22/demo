@@ -11,6 +11,8 @@ const optionsForIt = ['--SELECT--', 'PC Slowness', 'Blue Screen', 'Account Unloc
 const optiontravel = ['--SELECT--', 'Domestic Travel Policy', 'International Travel Policy', 'Others'];
 const optionsmediclaim = ['--SELECT--', 'My Group Policy Number', 'Download Group Policy', 'Intimation for Treatment', 'Others'];
 const optionsfaq = ['--SELECT--', 'List of FAQ', 'Others'];
+const optionsLocation = ['Noida', 'Mumbai', 'Bangalore', 'Hyderabad'];
+const hrOptions = ['Suchitra Mitra', 'Sakshi Patanker', 'Apoorva Shukla'];
 let fdetails = {};
 let isMuted = false;
 let timer;
@@ -36,7 +38,6 @@ hrPulseDiv.addEventListener('click', function() {
 itDiv.addEventListener('click', function() {
 	clearTimeout(timer);
 	clearChatInputs();
-	debugger
 	clearTimeout(timer);
 	appendUserMessage('IT SERVICE');
 	if (activeSection !== null) {
@@ -84,9 +85,7 @@ faqDiv.addEventListener('click', function() {
 });
 
 function removeOptions() {
-
 	const botOptions = document.querySelector('.chat-messageOptions.bot-messageOptions');
-
 	if (botOptions) {
 		botOptions.remove();
 	}
@@ -144,7 +143,6 @@ function askForHrPulse() {
 	scope.fetchSubModule(1).then(function(data) {
 		if (data && Array.isArray(data)) {
 			appendBotOptions(data, moduleId);
-
 		}
 
 	});
@@ -168,6 +166,26 @@ function askFormediclaim() {
 	appendBotOptions(optionsmediclaim);
 }
 
+function askForLocation() {
+	return new Promise((resolve) => {
+		clearChatInputs();
+		appendBotMessage('Select your Location');
+		createDropdownWithOptions(optionsLocation,8);
+		setTimeout(() => {
+			console.log("askForLocation completed");
+			resolve();
+		}, 4000);
+	});
+}
+
+function askForHr() {
+	clearChatInputs();
+	appendBotMessage('Please select your HR to whom you want to sent mail');
+	createDropdownWithOptions(hrOptions,10);
+	
+	
+}
+
 function askforfaq() {
 	clearChatInputs();
 	appendBotMessage('Please select your question...');
@@ -182,6 +200,10 @@ function appendBotOptions(data, moduleId) {
 	if (moduleId === 1) { // Check the moduleId to determine whether to show the dropdown
 		if (data && data.length > 0) {
 			const select = document.createElement('select');
+			const defaultOption = document.createElement('option');
+			defaultOption.value = '';
+			defaultOption.text = '--Select--';
+			select.appendChild(defaultOption);
 
 			data.forEach(subModule => {
 				const optionElement = document.createElement('option');
@@ -191,51 +213,13 @@ function appendBotOptions(data, moduleId) {
 			});
 			select.addEventListener('change', function() {
 				const selectedOption = select.options[select.selectedIndex].text;
+				var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+				scope.fetchBotMessages(selectedOption).then(function(data) {
+
+				});
 				appendUserMessage(selectedOption);
-				if (selectedOption == 'Leave balance') {
-					appendBotMessage('Redirecting you to the Hono portal....');
-					window.open('https://3i.honohr.com/login', '_blank');
-				} else if (selectedOption == 'claims') {
-					appendBotMessage('Redirecting you to the IAssist Portal');
-					window.open('http://14.141.70.64/TicketingSystem/Login.aspx', '_blank');
-				} else if (selectedOption == 'Holiday calendar') {
-					appendBotMessage('Redirecting you to the Holiday calendar');
-					window.open('https://pulse.3i-infotech.com/HRIntranet/ViewDocs?t=holidaylist', '_blank');
-				} else if (selectedOption == 'My Current Location' || selectedOption == 'Location Change Request' || selectedOption == 'Domestic Travel Policy' || selectedOption == 'International Travel Policy' || selectedOption == 'PC Slowness' || selectedOption == 'Blue Screen' || selectedOption == 'My Group Policy Number') {
-					appendBotMessage('Coming Soon....');
-				} else if (selectedOption === 'Others') {
-					// Create an input field for user input
-					appendBotMessage('Please enter your concern..');
-					removeOptions();
-					otherSection();
-				}
-				else if (selectedOption === 'Password Reset') {
-					promptForLoginName();
-				} else if (selectedOption === 'RM Change Request') {
-					appendBotMessage("Please select your location");
-					askForLocation();
-					const to = 'recipient@example.com'; // Replace with the recipient's email address
-					const subject = 'RM Change Request';
-					const message = 'Please process the RM Change Request.';
-
-					// Make an AJAX request to send the email
-					fetch('/sendEmail', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded',
-						},
-						body: `to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&message=${encodeURIComponent(message)}`,
-					})
-						.then(response => response.text())
-						.then(data => {
-							appendBotMessage(data); // Display the response message
-						})
-						.catch(error => {
-							appendBotMessage('Error: ' + error);
-						});
-				}
-
 			});
+
 
 			chatMessage.appendChild(select);
 		} else {
@@ -248,34 +232,36 @@ function appendBotOptions(data, moduleId) {
 	chatInputs.appendChild(chatMessage);
 	scrollToBottom();
 }
-function askForLocation() {
-	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
-	scope.fetchLocation().then(function(data) {
-		if (data && Array.isArray(data)) {
+function createDropdownWithOptions(options,chatresponses) {
+	const chatMessage = document.createElement('div');
+	chatMessage.className = 'chat-messageOptions bot-messageOptions';
+	const select = document.createElement('select');
+	const defaultOption = document.createElement('option');
+	defaultOption.value = '';
+	defaultOption.text = '--Select--';
+	select.appendChild(defaultOption);
 
-		}
+	options.forEach(optionText => {
+		const optionElement = document.createElement('option');
+		optionElement.value = optionText;
+		optionElement.text = optionText;
+		select.appendChild(optionElement);
 	});
+	
+	select.addEventListener('change', function() {
+		const selectedOption = select.options[select.selectedIndex].text;
+		appendUserMessage(selectedOption);
+		if(chatresponses==10){
+			appendBotMessage('Email Sent Successfully...');
+		}
 
+	});
+	
+	chatMessage.appendChild(select);
+	chatInputs.appendChild(chatMessage);
+	scrollToBottom();
 }
 
-function createDropdown(data) {
-	let dropdownOptions = data.map(item => `<option value="${item.lossId}|${item.edescription}">${item.edescription}</option>`).join("");
-	chatInputs.innerHTML =
-		`<select id="chatbot_cause">
-        ${dropdownOptions}
-    </select>
-    <button onclick="collectCause()">Send</button>`;
-	appendBotMessage("Select HR WHOM YOU WANT TO SEND MAIL");
-}
-
-function collectlocation() {
-	let selectedValue = document.getElementById('chatbot_cause').value;
-	let [lossId, lossName] = selectedValue.split('|');
-	fdetails.lossId = lossId;
-	fdetails.lossName = lossName;
-	appendUserMessage(fdetails.lossName);
-	askLifeCycle();
-}
 function promptForLoginName() {
 	appendBotMessage('Please enter the Employee login name:');
 	chatInputs.innerHTML = `
@@ -303,7 +289,14 @@ function collectPassword() {
 	appendUserMessage("*******"); // Mask the password in chat for security
 	appendBotMessage("Password reset request received. Processing...");
 }
-
+function displayMessage(){
+	   const chatBarBottom = document.getElementById("ThankYouContainer");
+        let sucessMsg = document.getElementById("sucessMsg");
+        chatBarBottom.innerHTML = "Email sent successfully";
+        sucessMsg.style.display = "block";
+        chatBarBottom.style.opacity = '1';
+        chatBarBottom.style.animation = 'thankYouAnimation 1s ease-out';
+}
 
 function finish() {
 	let HideMydiv = document.getElementById("chatInputs");
@@ -318,36 +311,7 @@ function finish() {
 	btn.addEventListener("click", displayMessage);
 	chatInputs.innerHTML = '';
 }
-function displayMessage() {
 
-	const myObject = {
-		applicationId: fdetails.applicationId,
-		name: fdetails.name,
-		state: fdetails.state,
-		district: fdetails.district,
-		taluka: fdetails.taluka,
-		village: fdetails.village,
-		surveyNumber: fdetails.surveyNumber,
-		cause: fdetails.cause,
-		date: fdetails.date
-
-	};
-	//sendDataToAngular(myObject);
-	//document.getElementById("chat-bar-bottom").innerHTML = "Thank you for submitting your details!";
-	//console.log(fdetails);
-	let sucessMsg = document.getElementById("sucessMsg");
-	const chatBarBottom = document.getElementById("ThankYouContainer");
-	sucessMsg.style.display = "block";
-	chatBarBottom.innerHTML = "🎉 Thank you for submitting your details! 🎉";
-	chatBarBottom.style.opacity = '1';
-	chatBarBottom.style.animation = 'thankYouAnimation 1s ease-out';
-	console.log(fdetails);
-}
-function sendDataToAngular(data) {
-	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
-	scope.receiveDataFromJS(data);
-	scope.$apply();
-}
 function textToSpeech(text) {
 	if (isMuted) {
 		return;
@@ -361,7 +325,6 @@ function textToSpeech(text) {
 
 // Start the chatbot
 document.addEventListener("DOMContentLoaded", function() {
-	//askForName();
 });
 
 function toggleMute() {
@@ -433,7 +396,6 @@ function clearChatInputs() {
 }
 
 function otherSection() {
-	debugger
 	chatInputs.innerHTML = `
         <input type="text" id="others" placeholder='enter here.....' >
         <button id="nextButton" onclick="">Send</button>
@@ -441,5 +403,23 @@ function otherSection() {
 }
 function removeOtherSection() {
 	chatInputs.innerHTML = '';
+}
+function createElement() {
+	chatInputs.innerHTML = `
+        <input type="text" id="inputValue">
+        <button id="nextButton" onclick="sendInputToAngular()">Send</button>
+    `;
+}
+async function sendInputToAngular() {
+	const inputValue = document.getElementById('inputValue').value;
+	appendUserMessage(inputValue);
+	try {
+		await askForLocation();
+		console.log("askForLocation has completed, now calling askForHr");
+		askForHr();
+	} catch (error) {
+		console.error("Error in askForLocation:", error);
+	}
+	
 }
 
