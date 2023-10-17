@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.botpulse.demo.entity.ChatResponses;
-import com.botpulse.demo.entity.EmpJobLocationMaster;
 import com.botpulse.demo.entity.SubModule;
 import com.botpulse.demo.repository.ChatResponseRepository;
-import com.botpulse.demo.repository.EmpJobLocationMasterRepository;
 import com.botpulse.demo.repository.SubModuleRepository;
 
 @RestController
@@ -31,15 +29,15 @@ import com.botpulse.demo.repository.SubModuleRepository;
 public class ChatBotController {
 	
 	private final String LOC_URL ="https://3i.honohr.com/sapi/Empdetails/getAllEmployeeInformation";
-
+	
 	@Autowired
 	private SubModuleRepository subModuleRepository;
 
 	@Autowired
     private ChatResponseRepository chatResponseRepository;
 	
-	@Autowired
-	private EmpJobLocationMasterRepository empJobLocationMasterRepository;
+//	@Autowired
+//	private EmpJobLocationMasterRepository empJobLocationMasterRepository;
 
    
      public ChatBotController(ChatResponseRepository chatResponseRepository) {
@@ -79,11 +77,23 @@ public class ChatBotController {
         return response;
     }
    
-    @GetMapping("/location")
-    public ResponseEntity<List<EmpJobLocationMaster>> getEmpJobLocationMaster() {
-      List<EmpJobLocationMaster> empJobLocationMaster = empJobLocationMasterRepository.findAll();
-     // EmpJobLocationMaster empJobLocationMaster = new Array
-      return ResponseEntity.ok(empJobLocationMaster);
-  }
+//    @GetMapping("/location")
+//    public ResponseEntity<List<EmpJobLocationMaster>> getEmpJobLocationMaster() {
+//      List<EmpJobLocationMaster> empJobLocationMaster = empJobLocationMasterRepository.findAll();
+//     // EmpJobLocationMaster empJobLocationMaster = new Array
+//      return ResponseEntity.ok(empJobLocationMaster);
+//  }
+   
+   
+    @GetMapping("/chatAi/byQuery/{query}")
+    public String fetchAiAnswer(@PathVariable String query) {
+        RestTemplate restTemplate = new RestTemplate();
+        String CHAT_AI = "http://127.0.0.1:8000/query"; // Update with your actual API URL
+        String urlWithParam = CHAT_AI + "?q=" + query;
+        ResponseEntity<String> response = restTemplate.exchange(urlWithParam, HttpMethod.GET, null, String.class);
+        System.out.println(response);
+        return response.getBody();
+    }
+
 
 }

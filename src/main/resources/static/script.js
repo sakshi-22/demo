@@ -410,6 +410,23 @@ function createElement() {
         <button id="nextButton" onclick="sendInputToAngular()">Send</button>
     `;
 }
+
+function createOthersSection(){
+	chatInputs.innerHTML = `
+        <input type="text" id="query">
+        <button id="nextButton" onclick="sendQuery()">Send</button>
+    `;
+}
+
+function sendQuery (){
+	debugger
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	const query = document.getElementById('query').value;
+	scope.fetchChatAiResponse(query).then(function(query) {
+	});
+}
+
+
 async function sendInputToAngular() {
 	const inputValue = document.getElementById('inputValue').value;
 	appendUserMessage(inputValue);

@@ -29,6 +29,21 @@ app.controller('myCtrl', ['$scope', '$http', function($scope, $http) {
 			}
 		});
 	};
+	
+	$scope.fetchChatAiResponse = function(query) {
+		appendUserMessage(query);
+		return $http({
+			method: 'GET',
+			url: `/api/chatAi/byQuery/${query}`,
+		}).then(function(response) {
+			if (response && response.data) {
+				appendBotMessage(response.data[0].answer);
+				return response.data;
+			} else {
+				return null;
+			}
+		});
+	}
 
 	$scope.fetchBotMessages = function(userMessages) {
 		return $http({
@@ -42,7 +57,9 @@ app.controller('myCtrl', ['$scope', '$http', function($scope, $http) {
 				console.log(response.data[0].botMessages);
 				if (result == 'Please enter your employee ID' && subModuleId == 3) {
 					createElement();
-				}
+				}else if(result == 'Please Enter Your Query Here'){
+					createOthersSection();
+					}
 				return response.data;
 			} else {
 				// Handle the case when there's no valid message.
@@ -50,6 +67,6 @@ app.controller('myCtrl', ['$scope', '$http', function($scope, $http) {
 				return null;
 			}
 		});
+	
 	};
-
 }]);
