@@ -149,11 +149,15 @@ function askForHrPulse() {
 }
 
 function askForItService() {
-	clearChatInputs();
-	appendBotMessage('What issue you are facing?');
-	appendBotOptions(optionsForIt);
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	appendBotMessage('Which option do you like to choose? ');
+	moduleId = 2;
+	scope.fetchSubModule(2).then(function(data) {
+		if (data && Array.isArray(data)) {
+			appendBotOptions(data, moduleId);
+		}
+	});
 }
-
 function askForTravel() {
 	clearChatInputs();
 	appendBotMessage('Which Travel policy do you want to know about?');
@@ -196,15 +200,12 @@ function askforfaq() {
 function appendBotOptions(data, moduleId) {
 	const chatMessage = document.createElement('div');
 	chatMessage.className = 'chat-messageOptions bot-messageOptions';
-
-	if (moduleId === 1) { // Check the moduleId to determine whether to show the dropdown
 		if (data && data.length > 0) {
 			const select = document.createElement('select');
 			const defaultOption = document.createElement('option');
 			defaultOption.value = '';
 			defaultOption.text = '--Select--';
 			select.appendChild(defaultOption);
-
 			data.forEach(subModule => {
 				const optionElement = document.createElement('option');
 				optionElement.value = subModule.subModuleName;
@@ -215,20 +216,13 @@ function appendBotOptions(data, moduleId) {
 				const selectedOption = select.options[select.selectedIndex].text;
 				var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
 				scope.fetchBotMessages(selectedOption).then(function(data) {
-
 				});
 				appendUserMessage(selectedOption);
 			});
-
-
 			chatMessage.appendChild(select);
 		} else {
 			chatMessage.textContent = 'No sub-modules available for this module.';
 		}
-	} else {
-		chatMessage.textContent = 'Dropdown not available for this module.';
-	}
-
 	chatInputs.appendChild(chatMessage);
 	scrollToBottom();
 }
