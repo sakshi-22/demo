@@ -111,16 +111,6 @@ public class ChatBotController {
         return response.getBody();
     }
     
-//    @GetMapping("/Questions/by-subModule/{subModuleId}")
-//    public ResponseEntity<List<UserQuestions>> getQuestionsBySubModuleId(@PathVariable Integer subModuleId) {
-//       List<UserQuestions> userQuestions = userQuestionRepository.findBySubModule_SubModuleId(subModuleId);
-//        if (userQuestions.isEmpty()) {
-//            return ResponseEntity.notFound().build();
-//        } else {
-//            return ResponseEntity.ok(userQuestions);
-//        }
-//
-//    }
     @GetMapping("/questions/by-subModule/{subModuleId}")
     public ResponseEntity<List<UserQuestions>> getQuestionsBysubModuleId(@PathVariable Integer subModuleId) {
         List<UserQuestions> userQuestions = userQuestionRepository.findByUserQuestions_SubModuleId(subModuleId);
@@ -131,7 +121,19 @@ public class ChatBotController {
         }
 
     }
+
     
+    @GetMapping("/botMessages/by-userQuestion/{question}")
+    public ResponseEntity<List<UserQuestions>> getBotMessagesByUserQuestions(@PathVariable String question) {
+    	   System.out.println(question);
+        List<UserQuestions> userQuestions = userQuestionRepository.findByBotMessages_UserQuestions(question);
+        System.out.println(userQuestions);
+        if (userQuestions.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(userQuestions);
+        }
+    }
     
 
 
