@@ -2,6 +2,7 @@ package com.botpulse.demo.entity;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +32,8 @@ public class SubModule {
     
     @OneToMany(mappedBy = "subModuleName")
     private List<ChatResponses> chatResponses;
-
+    
+  
     public ModuleMaster getModuleMaster() {
         return moduleMaster;
     }

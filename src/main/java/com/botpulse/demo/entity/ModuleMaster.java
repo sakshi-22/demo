@@ -29,8 +29,7 @@ public class ModuleMaster {
 	
 	@OneToMany(mappedBy = "moduleName")
 	private List<ChatResponses> chatResponses;
-
-
+	
 	public int getModuleId() {
 		return moduleId;
 	}

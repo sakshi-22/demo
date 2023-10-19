@@ -1,8 +1,6 @@
 package com.botpulse.demo.controller;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -12,15 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.botpulse.demo.entity.ChatResponses;
+import com.botpulse.demo.entity.ModuleMaster;
 import com.botpulse.demo.entity.SubModule;
 import com.botpulse.demo.repository.ChatResponseRepository;
+import com.botpulse.demo.repository.ModuleMasterRepository;
 import com.botpulse.demo.repository.SubModuleRepository;
 
 @RestController
@@ -36,15 +34,15 @@ public class ChatBotController {
 	@Autowired
     private ChatResponseRepository chatResponseRepository;
 	
-//	@Autowired
-//	private EmpJobLocationMasterRepository empJobLocationMasterRepository;
+	@Autowired
+	private ModuleMasterRepository moduleMasterRepository;
+	
 
    
      public ChatBotController(ChatResponseRepository chatResponseRepository) {
  		this.chatResponseRepository = chatResponseRepository;
      }
 
-     //////
     @GetMapping("/submodules/by-module/{moduleId}")
     public ResponseEntity<List<SubModule>> getSubModulesByModuleId(@PathVariable Integer moduleId) {
         List<SubModule> subModules = subModuleRepository.findByModuleMaster_ModuleId(moduleId);
@@ -54,6 +52,16 @@ public class ChatBotController {
             return ResponseEntity.ok(subModules);
         }
 
+    }
+    
+    @GetMapping("/module/{moduleId}")
+    public ResponseEntity<List<ModuleMaster>> getModulesByModuleId(@PathVariable Integer moduleId) {
+        List<ModuleMaster> moduleMaster = moduleMasterRepository.findBModuleMasterByModuleId(moduleId);
+        if (moduleMaster.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(moduleMaster);
+        }
     }
     
     @GetMapping("/chatresponses/by-userMessage/{userMessages}")

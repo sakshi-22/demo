@@ -5,15 +5,8 @@ const itDiv = document.querySelector('.chatcustomchange[data-type="itService"]')
 const travelDiv = document.querySelector('.chatcustomchange[data-type="travel"]');
 const mediclaimDiv = document.querySelector('.chatcustomchange[data-type="mediclaim"]');
 const faqDiv = document.querySelector('.chatcustomchange[data-type="faq"]');
-const options1 = ['--SELECT--', 'Leaves', 'medical', 'payroll', 'comp & ben', 'claims', 'ESIC', 'careers'];
-const optionsHR = ['--SELECT--', 'Leave balance', 'Holiday calendar', 'RM Change Request', 'My Current Location', 'Location Change Request', 'Others'];
-const optionsForIt = ['--SELECT--', 'PC Slowness', 'Blue Screen', 'Account Unlock', 'Password Reset', 'Software Installation', 'Software Uninstallation', 'Network Slowness Issue', 'Others'];
-const optiontravel = ['--SELECT--', 'Domestic Travel Policy', 'International Travel Policy', 'Others'];
-const optionsmediclaim = ['--SELECT--', 'My Group Policy Number', 'Download Group Policy', 'Intimation for Treatment', 'Others'];
-const optionsfaq = ['--SELECT--', 'List of FAQ', 'Others'];
 const optionsLocation = ['Noida', 'Mumbai', 'Bangalore', 'Hyderabad'];
 const hrOptions = ['Suchitra Mitra', 'Sakshi Patanker', 'Apoorva Shukla'];
-let fdetails = {};
 let isMuted = false;
 let timer;
 let activeSection = null;
@@ -22,8 +15,6 @@ var moduleId = 0;
 hrPulseDiv.addEventListener('click', function() {
 	clearTimeout(timer);
 	clearChatInputs();
-	//moduleId = 1;
-	//fetchSubModule(moduleId);
 	appendUserMessage('HR Pulse');
 	askForHrPulse();
 	if (activeSection !== null) {
@@ -32,8 +23,6 @@ hrPulseDiv.addEventListener('click', function() {
 	}
 	activeSection = 'hrPulse';
 });
-
-
 
 itDiv.addEventListener('click', function() {
 	clearTimeout(timer);
@@ -138,9 +127,10 @@ function collectYes() {
 
 function askForHrPulse() {
 	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
-	appendBotMessage('Which option do you like to choose? ');
+	scope.fetchBotMessages('HR Pulse').then(function(data) {
+	});
 	moduleId = 1;
-	scope.fetchSubModule(1).then(function(data) {
+	scope.fetchSubModule(moduleId).then(function(data) {
 		if (data && Array.isArray(data)) {
 			appendBotOptions(data, moduleId);
 		}
@@ -174,7 +164,7 @@ function askForLocation() {
 	return new Promise((resolve) => {
 		clearChatInputs();
 		appendBotMessage('Select your Location');
-		createDropdownWithOptions(optionsLocation,8);
+		createDropdownWithOptions(optionsLocation, 8);
 		setTimeout(() => {
 			console.log("askForLocation completed");
 			resolve();
@@ -185,9 +175,7 @@ function askForLocation() {
 function askForHr() {
 	clearChatInputs();
 	appendBotMessage('Please select your HR to whom you want to sent mail');
-	createDropdownWithOptions(hrOptions,10);
-	
-	
+	createDropdownWithOptions(hrOptions, 10);
 }
 
 function askforfaq() {
@@ -196,37 +184,48 @@ function askforfaq() {
 	appendBotOptions(optionsfaq);
 }
 
-
 function appendBotOptions(data, moduleId) {
 	const chatMessage = document.createElement('div');
 	chatMessage.className = 'chat-messageOptions bot-messageOptions';
-		if (data && data.length > 0) {
-			const select = document.createElement('select');
-			const defaultOption = document.createElement('option');
-			defaultOption.value = '';
-			defaultOption.text = '--Select--';
-			select.appendChild(defaultOption);
-			data.forEach(subModule => {
-				const optionElement = document.createElement('option');
-				optionElement.value = subModule.subModuleName;
-				optionElement.text = subModule.subModuleName;
-				select.appendChild(optionElement);
+	const select = document.createElement('select');
+	const defaultOption = document.createElement('option');
+	defaultOption.value = '';
+	defaultOption.style.fontWeight = 'bold';
+	defaultOption.disabled = true;
+	select.appendChild(defaultOption);
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	scope.fetchModule(moduleId).then(function(moduleName) {
+		defaultOption.text = `__${moduleName}__` || 'Unknown Module'; // Set the moduleName or a default text
+	});
+	if (data && data.length > 0) {
+		data.forEach(subModule => {
+			const optionElement = document.createElement('option');
+			optionElement.value = subModule.subModuleName;
+			optionElement.text = subModule.subModuleName;
+			select.appendChild(optionElement);
+			optionElement.setAttribute('data-submodule-id', subModule.subModuleId);
+		});
+		select.addEventListener('change', function() {
+			const selectedOption = select.options[select.selectedIndex].text;
+			const selectedSubModuleId = select.options[select.selectedIndex].getAttribute('data-submodule-id');
+			scope.fetchQuestions(selectedSubModuleId).then(function(questionsData) {
+				createDropdownQuestions(questionsData);  // Function to generate a new dropdown for questions
 			});
-			select.addEventListener('change', function() {
-				const selectedOption = select.options[select.selectedIndex].text;
-				var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
-				scope.fetchBotMessages(selectedOption).then(function(data) {
-				});
-				appendUserMessage(selectedOption);
+
+			scope.fetchBotMessages(selectedOption).then(function(data) {
 			});
-			chatMessage.appendChild(select);
-		} else {
-			chatMessage.textContent = 'No sub-modules available for this module.';
-		}
+
+			appendUserMessage(selectedOption);
+		});
+		chatMessage.appendChild(select);
+	} else {
+		chatMessage.textContent = 'No sub-modules available for this module.';
+	}
 	chatInputs.appendChild(chatMessage);
 	scrollToBottom();
 }
-function createDropdownWithOptions(options,chatresponses) {
+
+function createDropdownQuestions(options, chatresponses) {
 	const chatMessage = document.createElement('div');
 	chatMessage.className = 'chat-messageOptions bot-messageOptions';
 	const select = document.createElement('select');
@@ -241,16 +240,16 @@ function createDropdownWithOptions(options,chatresponses) {
 		optionElement.text = optionText;
 		select.appendChild(optionElement);
 	});
-	
+
 	select.addEventListener('change', function() {
 		const selectedOption = select.options[select.selectedIndex].text;
+		
 		appendUserMessage(selectedOption);
-		if(chatresponses==10){
+		if (chatresponses == 10) {
 			appendBotMessage('Email Sent Successfully...');
 		}
-
 	});
-	
+
 	chatMessage.appendChild(select);
 	chatInputs.appendChild(chatMessage);
 	scrollToBottom();
@@ -283,13 +282,13 @@ function collectPassword() {
 	appendUserMessage("*******"); // Mask the password in chat for security
 	appendBotMessage("Password reset request received. Processing...");
 }
-function displayMessage(){
-	   const chatBarBottom = document.getElementById("ThankYouContainer");
-        let sucessMsg = document.getElementById("sucessMsg");
-        chatBarBottom.innerHTML = "Email sent successfully";
-        sucessMsg.style.display = "block";
-        chatBarBottom.style.opacity = '1';
-        chatBarBottom.style.animation = 'thankYouAnimation 1s ease-out';
+function displayMessage() {
+	const chatBarBottom = document.getElementById("ThankYouContainer");
+	let sucessMsg = document.getElementById("sucessMsg");
+	chatBarBottom.innerHTML = "Email sent successfully";
+	sucessMsg.style.display = "block";
+	chatBarBottom.style.opacity = '1';
+	chatBarBottom.style.animation = 'thankYouAnimation 1s ease-out';
 }
 
 function finish() {
@@ -315,7 +314,6 @@ function textToSpeech(text) {
 	utterance.lang = 'en-US';
 	synth.speak(utterance);
 }
-
 
 // Start the chatbot
 document.addEventListener("DOMContentLoaded", function() {
@@ -405,21 +403,20 @@ function createElement() {
     `;
 }
 
-function createOthersSection(){
+function createOthersSection() {
 	chatInputs.innerHTML = `
         <input type="text" id="query">
         <button id="nextButton" onclick="sendQuery()">Send</button>
     `;
 }
 
-function sendQuery (){
+function sendQuery() {
 	debugger
 	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
 	const query = document.getElementById('query').value;
 	scope.fetchChatAiResponse(query).then(function(query) {
 	});
 }
-
 
 async function sendInputToAngular() {
 	const inputValue = document.getElementById('inputValue').value;
@@ -431,6 +428,5 @@ async function sendInputToAngular() {
 	} catch (error) {
 		console.error("Error in askForLocation:", error);
 	}
-	
-}
 
+}
