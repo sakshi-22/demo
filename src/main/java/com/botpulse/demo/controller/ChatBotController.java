@@ -17,9 +17,11 @@ import org.springframework.web.client.RestTemplate;
 import com.botpulse.demo.entity.ChatResponses;
 import com.botpulse.demo.entity.ModuleMaster;
 import com.botpulse.demo.entity.SubModule;
+import com.botpulse.demo.entity.UserQuestions;
 import com.botpulse.demo.repository.ChatResponseRepository;
 import com.botpulse.demo.repository.ModuleMasterRepository;
 import com.botpulse.demo.repository.SubModuleRepository;
+import com.botpulse.demo.repository.UserQuestionRepository;
 
 @RestController
 @RequestMapping("/api")
@@ -37,6 +39,11 @@ public class ChatBotController {
 	@Autowired
 	private ModuleMasterRepository moduleMasterRepository;
 	
+//	@Autowired
+//	private EmpJobLocationMasterRepository empJobLocationMasterRepository;
+	
+	@Autowired
+	private UserQuestionRepository userQuestionRepository;
 
    
      public ChatBotController(ChatResponseRepository chatResponseRepository) {
@@ -103,6 +110,29 @@ public class ChatBotController {
         System.out.println(response);
         return response.getBody();
     }
+    
+//    @GetMapping("/Questions/by-subModule/{subModuleId}")
+//    public ResponseEntity<List<UserQuestions>> getQuestionsBySubModuleId(@PathVariable Integer subModuleId) {
+//       List<UserQuestions> userQuestions = userQuestionRepository.findBySubModule_SubModuleId(subModuleId);
+//        if (userQuestions.isEmpty()) {
+//            return ResponseEntity.notFound().build();
+//        } else {
+//            return ResponseEntity.ok(userQuestions);
+//        }
+//
+//    }
+    @GetMapping("/questions/by-subModule/{subModuleId}")
+    public ResponseEntity<List<UserQuestions>> getQuestionsBysubModuleId(@PathVariable Integer subModuleId) {
+        List<UserQuestions> userQuestions = userQuestionRepository.findByUserQuestions_SubModuleId(subModuleId);
+        if (userQuestions.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(userQuestions);
+        }
+
+    }
+    
+    
 
 
 }
