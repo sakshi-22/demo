@@ -86,11 +86,28 @@ body {
 .chat-inputs,
 #chat-bar-bottom {
     padding: 15px;
+    padding-left: 60px;
 	background-color: #F4F7FA;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	position: relative;
 }
+.homeIcon{
+    position: absolute;
+    left: 15px;
+    top: 0px;
+    width: 30px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+.homeIcon img{
+    cursor: pointer;
+}
+
 
 
 input,

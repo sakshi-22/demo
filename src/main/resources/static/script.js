@@ -4,9 +4,9 @@ const hrPulseDiv = document.querySelector('.chatcustomchange[data-type="hrPulse"
 const itDiv = document.querySelector('.chatcustomchange[data-type="itService"]');
 const travelDiv = document.querySelector('.chatcustomchange[data-type="travel"]');
 const mediclaimDiv = document.querySelector('.chatcustomchange[data-type="mediclaim"]');
+const payrollDiv = document.querySelector('.chatcustomchange[data-type="payroll"]');
 const faqDiv = document.querySelector('.chatcustomchange[data-type="faq"]');
 const optionsLocation = ['Noida', 'Mumbai', 'Bangalore', 'Hyderabad'];
-const hrOptions = ['Suchitra Mitra', 'Sakshi Patanker', 'Apoorva Shukla'];
 let isMuted = false;
 let timer;
 let activeSection = null;
@@ -31,7 +31,7 @@ itDiv.addEventListener('click', function() {
 	appendUserMessage('IT SERVICE');
 	if (activeSection !== null) {
 		removeOptions();
-		removeOtherSection();
+		//removeOtherSection();
 	}
 	askForItService();
 	activeSection = 'itService';
@@ -43,7 +43,7 @@ travelDiv.addEventListener('click', function() {
 	appendUserMessage('TRAVEL');
 	if (activeSection !== null) {
 		removeOptions();
-		removeOtherSection();
+		//removeOtherSection();
 	}
 	askForTravel();
 	activeSection = 'travel';
@@ -55,7 +55,7 @@ mediclaimDiv.addEventListener('click', function() {
 	appendUserMessage('MEDICLAIM');
 	if (activeSection !== null) {
 		removeOptions();
-		removeOtherSection();
+	//	removeOtherSection();
 	}
 	askFormediclaim();
 	activeSection = 'mediclaim';
@@ -67,12 +67,23 @@ faqDiv.addEventListener('click', function() {
 	appendUserMessage('FAQ');
 	if (activeSection !== null) {
 		removeOptions();
-		removeOtherSection();
+		//removeOtherSection();
 	}
 	askforfaq();
 	activeSection = 'faq';
 });
 
+payrollDiv.addEventListener('click', function() {
+	clearChatInputs();
+	clearTimeout(timer);
+	appendUserMessage('PAYROLL');
+	if (activeSection !== null) {
+		removeOptions();
+		//removeOtherSection();
+	}
+	askForPayroll();
+	activeSection = 'payroll';
+});
 function removeOptions() {
 	const botOptions = document.querySelector('.chat-messageOptions.bot-messageOptions');
 	if (botOptions) {
@@ -80,14 +91,14 @@ function removeOptions() {
 	}
 }
 
-timer = setTimeout(function() {
-	appendBotMessage("Is there any concern you are facing,Would you like to raise a ticket? ");
-	if (activeSection !== null) {
-		removeOptions();
-	}
-	askForYesOrNo();
-	activeSection = 'hrPulse';
-}, 180000);
+//timer = setTimeout(function() {
+	//appendBotMessage("Is there any concern you are facing,Would you like to raise a ticket? ");
+	//if (activeSection !== null) {
+		//removeOptions();
+	//}
+	//askForYesOrNo();
+	//activeSection = 'hrPulse';
+//}, 180000);
 
 function appendUserMessage(message) {
 	const userMsg = document.createElement('div');
@@ -149,15 +160,41 @@ function askForItService() {
 	});
 }
 function askForTravel() {
-	clearChatInputs();
-	appendBotMessage('Which Travel policy do you want to know about?');
-	appendBotOptions(optiontravel);
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	appendBotMessage('Which option do you like to choose? ');
+	moduleId = 3;
+	scope.fetchSubModule(moduleId).then(function(data) {
+		if (data && Array.isArray(data)) {
+			appendBotOptions(data, moduleId);
+		}
+	});
 }
 
 function askFormediclaim() {
-	clearChatInputs();
-	appendBotMessage('Which Mediclaim policy do you want to know about?');
-	appendBotOptions(optionsmediclaim);
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	appendBotMessage('Which option do you like to choose? ');
+	moduleId = 4;
+	scope.fetchSubModule(moduleId).then(function(data) {
+		if (data && Array.isArray(data)) {
+			appendBotOptions(data, moduleId);
+		}
+	});
+}
+function askForPayroll() {
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	appendBotMessage('Which option do you like to choose? ');
+	moduleId = 6;
+	scope.fetchSubModule(moduleId).then(function(data) {
+		if (data && Array.isArray(data)) {
+			appendBotOptions(data, moduleId);
+		}
+	});
+}
+function askforfaq() {
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	moduleId = 5;
+	scope.fetchBotMessages('FAQ').then(function(data) {
+	});
 }
 
 function askForLocation() {
@@ -178,20 +215,29 @@ function askForHr() {
 	createDropdownWithOptions(hrOptions, 10);
 }
 
-function askforfaq() {
-	clearChatInputs();
-	appendBotMessage('Please select your question...');
-	appendBotOptions(optionsfaq);
-}
+
 
 function appendBotOptions(data, moduleId) {
 	const chatMessage = document.createElement('div');
 	chatMessage.className = 'chat-messageOptions bot-messageOptions';
+	const homeIconDiv = document.createElement('div');
+    homeIconDiv.className = 'homeIcon';
+    //const button = document.createElement('button');
+  	const image = document.createElement('img');
+    image.src = 'assests/Home.svg';
+    image.alt = 'Home';
+    image.className = 'homeIcon-img'; 
+    //button.appendChild(image);
+    homeIconDiv.appendChild(image);
 	const select = document.createElement('select');
+	select.className = 'first-dropdown';
 	const defaultOption = document.createElement('option');
 	defaultOption.value = '';
 	defaultOption.style.fontWeight = 'bold';
-	defaultOption.disabled = true;
+	//defaultOption.disabled = true;
+	defaultOption.style.color = 'green';       
+	defaultOption.style.backgroundColor = '#f2f2f2';
+	defaultOption.style.padding = '5px';
 	select.appendChild(defaultOption);
 	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
 	scope.fetchModule(moduleId).then(function(moduleName) {
@@ -206,10 +252,14 @@ function appendBotOptions(data, moduleId) {
 			optionElement.setAttribute('data-submodule-id', subModule.subModuleId);
 		});
 		select.addEventListener('change', function() {
+			if (select.value === 'default') {
+				return;
+			}
 			const selectedOption = select.options[select.selectedIndex].text;
 			const selectedSubModuleId = select.options[select.selectedIndex].getAttribute('data-submodule-id');
+			console.log('Selected SubModule ID:', selectedSubModuleId);
 			scope.fetchQuestions(selectedSubModuleId).then(function(questionsData) {
-				createDropdownQuestions(questionsData);  // Function to generate a new dropdown for questions
+				createDropdownQuestions(questionsData,selectedOption);
 			});
 
 			scope.fetchBotMessages(selectedOption).then(function(data) {
@@ -217,44 +267,57 @@ function appendBotOptions(data, moduleId) {
 
 			appendUserMessage(selectedOption);
 		});
+		
 		chatMessage.appendChild(select);
 	} else {
 		chatMessage.textContent = 'No sub-modules available for this module.';
 	}
+	chatMessage.appendChild(homeIconDiv);
 	chatInputs.appendChild(chatMessage);
 	scrollToBottom();
 }
 
-function createDropdownQuestions(options, chatresponses) {
-	const chatMessage = document.createElement('div');
-	chatMessage.className = 'chat-messageOptions bot-messageOptions';
-	const select = document.createElement('select');
-	const defaultOption = document.createElement('option');
-	defaultOption.value = '';
-	defaultOption.text = '--Select--';
-	select.appendChild(defaultOption);
+function createDropdownQuestions(questionsData,defaultText) {
+	var scope = angular.element(document.querySelector('[ng-controller=myCtrl]')).scope();
+	const firstDropdowns = document.querySelectorAll('.first-dropdown');
+    firstDropdowns.forEach(function(dropdown) {
+        dropdown.parentElement.style.display = 'none';
+    });
+    const chatMessage = document.createElement('div');
+    chatMessage.className = 'chat-messageOptions bot-messageOptions';
+    const select = document.createElement('select');
+    select.className = 'second-dropdown';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.text = `__${defaultText}__` || 'Unknown Module';
+    defaultOption.style.fontWeight = 'bold';
+	defaultOption.disabled = true;
+	defaultOption.style.color = 'green';       
+	defaultOption.style.backgroundColor = '#f2f2f2';
+	defaultOption.style.padding = '5px';
+    
+    select.appendChild(defaultOption);
 
-	options.forEach(optionText => {
-		const optionElement = document.createElement('option');
-		optionElement.value = optionText;
-		optionElement.text = optionText;
-		select.appendChild(optionElement);
-	});
+    questionsData.forEach(question => {
+        const optionElement = document.createElement('option');
+        optionElement.value = question;  // Assuming questionsData is an array of strings.
+        optionElement.text = question;
+        select.appendChild(optionElement);
+    });
 
-	select.addEventListener('change', function() {
-		const selectedOption = select.options[select.selectedIndex].text;
-		
-		appendUserMessage(selectedOption);
-		if (chatresponses == 10) {
-			appendBotMessage('Email Sent Successfully...');
-		}
-	});
+    select.addEventListener('change', function() {
+        const selectedOption = select.options[select.selectedIndex].text;
+           appendUserMessage(selectedOption);
+        scope.fetchBotResponse(selectedOption).then(function(questionsData) {
+				
+			});
+        // You can add more logic here if needed when a question is selected
+    });
 
-	chatMessage.appendChild(select);
-	chatInputs.appendChild(chatMessage);
-	scrollToBottom();
+    chatMessage.appendChild(select);
+    chatInputs.appendChild(chatMessage);
+    scrollToBottom();
 }
-
 function promptForLoginName() {
 	appendBotMessage('Please enter the Employee login name:');
 	chatInputs.innerHTML = `
